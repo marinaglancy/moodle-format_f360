@@ -43,35 +43,32 @@ class format_f360_managers_form extends moodleform {
             return;
         }
 
-        // TODO groups queries must be in definition_after_data() or some other way so we don't call it every time
-        // in format_f360::page_set_course()
         $groups = $f360info->get_groups();
         $groupsurl = new moodle_url('/group/index.php', ['id' => $course->id]);
         $edithere = html_writer::link($groupsurl, 'click here'); // TODO string
-        if (empty($groups)) {
-            $mform->addElement('static', 'something', '', 'No groups setup yet, to edit '.$edithere); // TODO string;
-            return;
-        }
         $mform->addElement('static', 'something', '', 'To modify groups/teams '.$edithere); // TODO string;
 
         $mform->addElement('hidden', 'id', $course->id);
         $mform->setType('id', PARAM_INT);
 
+        $hasgroups = false;
         foreach ($groups as $group) {
-            $members = $f360info->get_group_members($group);
-            $options = array();
+            if (!$members = $f360info->get_group_members($group)) {
+                continue;
+            }
+            $options = [];
             foreach ($members as $user) {
                 $options[$user->id] = fullname($user);
             }
-            if ($options) {
-                $mform->addElement('autocomplete', 'group' . $group->id,
-                        format_string($group->name, null, ['context' => $context]),
-                        $options, ['multiple' => true]);
-            } else {
-                $mform->addElement('static', 'group' . $group->id,
-                        format_string($group->name, null, ['context' => $context]),
-                        'No users'); // TODO string.
-            }
+            $mform->addElement('autocomplete', 'group' . $group->id,
+                    format_string($group->name, null, ['context' => $context]),
+                    $options, ['multiple' => true]);
+            $hasgroups = true;
+        }
+
+        if (!$hasgroups) {
+            $mform->addElement('static', 'something', '', 'No groups setup yet'); // TODO string;
+            return;
         }
 
         $this->add_action_buttons();

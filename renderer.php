@@ -136,7 +136,8 @@ class format_f360_renderer extends format_section_renderer_base {
         echo $this->output->single_button($url, 'Generate'); // TODO string
 
         $url = new moodle_url(course_get_url($course), ['sesskey' => sesskey(), 'action' => 'removegenerated']);
-        echo $this->output->single_button($url, 'Remove all generated data'); // TODO string
+        echo html_writer::div(html_writer::link($url, 'Remove all generated data'));
+        //echo $this->output->single_button($url, 'Remove all generated data'); // TODO string
 
         if (!empty($modinfo->sections[2])) {
             echo $this->output->heading('Individual feedbacks', 4); // TODO string
@@ -156,7 +157,8 @@ class format_f360_renderer extends format_section_renderer_base {
         echo $this->output->single_button($url, 'Publish results'); // TODO string
 
         $url = new moodle_url(course_get_url($course), ['sesskey' => sesskey(), 'action' => 'unpublish']);
-        echo $this->output->single_button($url, 'Revert publishing results'); // TODO string
+        echo html_writer::div(html_writer::link($url, 'Revert publishing results'));
+        //echo $this->output->single_button($url, 'Revert publishing results'); // TODO string
 
     }
 
